@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
   SOCKET server = socket(AF_INET,SOCK_STREAM, IPPROTO_TCP);
   if (server == SOCKET_ERROR) {
     cout<<"Сокет создать не удалось..."<<endl;
-	return EXIT_FAILURE;
+    return EXIT_FAILURE;
   }
 
   char buffer[256];
@@ -38,25 +38,25 @@ int main(int argc, char** argv) {
   inf_addr.sin_addr = *((in_addr*)*host->h_addr_list);
   if (connect(server, (sockaddr*)&inf_addr, sizeof(inf_addr)) != SOCKET_ERROR) {
     cout << "Связь с сервером установлена!" << endl;
-	for (;;) {
-	  cout << "> ";
-	  cin.getline(buffer, 255);
-	  if (strlen(buffer)==1 && buffer[0]=='D') {
-		send(server, buffer, 1, 0);
-	  }
-	  else {
-	    cout << "send: " << strlen(buffer)+1 << ", " << buffer << endl;
-		send(server, buffer, strlen(buffer)+1, 0);
-		int n = recv(server, buffer, sizeof(buffer), 0);
-		cout << "recv: " << n << ", " << buffer << endl;
-	  }
-	}
+    for (;;) {
+      cout << "> ";
+      cin.getline(buffer, 255);
+      if (strlen(buffer)==1 && buffer[0]=='D') {
+      	send(server, buffer, 1, 0);
+      }
+      else {
+        cout << "send: " << strlen(buffer)+1 << ", " << buffer << endl;
+	send(server, buffer, strlen(buffer)+1, 0);
+	int n = recv(server, buffer, sizeof(buffer), 0);
+	cout << "recv: " << n << ", " << buffer << endl;
+      }
+    }
   }
   else {
-	cout << "Связь с сервером установить не удалось..." << endl;
-	closesocket(server);
-	WSACleanup();
-	return EXIT_FAILURE;
+    cout << "Связь с сервером установить не удалось..." << endl;
+    closesocket(server);
+    WSACleanup();
+    return EXIT_FAILURE;
   }
 
   closesocket(server);
