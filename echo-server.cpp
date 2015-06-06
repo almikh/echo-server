@@ -20,41 +20,42 @@ int main(int argc, char** argv) {
   setlocale(LC_ALL, "Russian");
 
   try {
-	parseArgs(argc, argv);
+    parseArgs(argc, argv);
   }
   catch (const exception& ex) {
-	cerr << "error: " << ex.what() << endl;
-	return EXIT_FAILURE;
+    cerr << "error: " << ex.what() << endl;
+    return EXIT_FAILURE;
   }
 
   WSADATA wsaData;
   if (WSAStartup(MAKEWORD(2,0), &wsaData) != NO_ERROR) { 
-	return EXIT_FAILURE;
+    return EXIT_FAILURE;
   }
 	
   for (int i = 0; i<nports; ++i) {
-	threads[i] = CreateThread(NULL, 0, thread, reinterpret_cast<LPVOID>(i), 0, NULL);
-	cout << "listen: " << ports[i] << endl;
+    threads[i] = CreateThread(NULL, 0, thread, reinterpret_cast<LPVOID>(i), 0, NULL);
+    cout << "listen: " << ports[i] << endl;
   }
 
   for (;;);
 	
   for (int i = 0; i<nports; ++i) {
-	if (sockets[i]) closesocket(sockets[i]);
+    if (sockets[i]) closesocket(sockets[i]);
   }
+  
   WSACleanup();
   return 0;
 }
 
 void parseArgs(int argc, char** argv) {
   if (argc < 2) {
-	cout << "Usage: " << argv[0] << " <port1> <port2> ..." << endl << endl;
-	exit(EXIT_SUCCESS);
+    cout << "Usage: " << argv[0] << " <port1> <port2> ..." << endl << endl;
+    exit(EXIT_SUCCESS);
   }
 
   nports = argc - 1;
   for (int i = 0; i<nports; ++i) {
-	ports[i] = atoi(argv[i+1]);
+    ports[i] = atoi(argv[i+1]);
   }
 }
 
@@ -71,43 +72,43 @@ DWORD WINAPI thread(LPVOID param) {
   inf_addr.sin_addr.s_addr = INADDR_ANY;
 
   if (bind(server, (sockaddr*)&inf_addr, sizeof(inf_addr)) == SOCKET_ERROR) {
-	return EXIT_FAILURE;
+    return EXIT_FAILURE;
   }
 
   if (listen(server, SOMAXCONN) == SOCKET_ERROR) {
-	return EXIT_FAILURE;
+    return EXIT_FAILURE;
   }
 	
   for (;;) {
-	sockaddr_in tmp_addr;
-	int addrlen = sizeof(tmp_addr);
-	memset(&tmp_addr, 0, sizeof(tmp_addr));
-	SOCKET client = accept(server, (sockaddr*)&tmp_addr, &addrlen);
-	cout << "accept: " << ports[id] << endl;
-	int length;
-	char buf[1024];
-	memset(buf, 0, sizeof(buf));
-	while ((length = recv(client, buf, sizeof(buf), 0)) > 0) {
-	  if (length==1 && buf[0]=='D') { //D
-		for (int i = 0; i<nports; ++i) {
-		  if (i!=id && threads[i]) {
-			cout << "Closed connections on port: " << ports[i] << endl;
-			TerminateThread(threads[i], 0);
-			closesocket(sockets[i]);
-			sockets[i] = 0;
-			threads[i] = 0;
-		  }
-		}
+    sockaddr_in tmp_addr;
+    int addrlen = sizeof(tmp_addr);
+    memset(&tmp_addr, 0, sizeof(tmp_addr));
+    SOCKET client = accept(server, (sockaddr*)&tmp_addr, &addrlen);
+    cout << "accept: " << ports[id] << endl;
+    int length;
+    char buf[1024];
+    memset(buf, 0, sizeof(buf));
+    while ((length = recv(client, buf, sizeof(buf), 0)) > 0) {
+      if (length==1 && buf[0]=='D') { //D
+	for (int i = 0; i<nports; ++i) {
+	  if (i!=id && threads[i]) {
+            cout << "Closed connections on port: " << ports[i] << endl;
+	    TerminateThread(threads[i], 0);
+	    closesocket(sockets[i]);
+	    sockets[i] = 0;
+	    threads[i] = 0;
 	  }
-	  else {
-		send(client, buf, length, 0);
-		cout << "send: " << buf << endl;
-	  }
-	  
-	  memset(buf, 0, sizeof(buf));
 	}
+      }
+      else {
+	send(client, buf, length, 0);
+	cout << "send: " << buf << endl;
+      }
+	  
+      memset(buf, 0, sizeof(buf));
+    }
     
-	closesocket(client);
+    closesocket(client);
   }
 
   return 0;
