@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 
 Example: Client.exe <port>
 
@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
   int port = atoi(argv[1]);
   SOCKET server = socket(AF_INET,SOCK_STREAM, IPPROTO_TCP);
   if (server == SOCKET_ERROR) {
-    cout<<"Ñîêåò ñîçäàòü íå óäàëîñü..."<<endl;
+    cout<<"Ð¡Ð¾ÐºÐµÑ‚ ÑÐ¾Ð·Ð´Ð°Ñ‚ÑŒ Ð½Ðµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ..."<<endl;
 	return EXIT_FAILURE;
   }
 
@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
   inf_addr.sin_family = AF_INET;
   inf_addr.sin_addr = *((in_addr*)*host->h_addr_list);
   if (connect(server, (sockaddr*)&inf_addr, sizeof(inf_addr)) != SOCKET_ERROR) {
-    cout << "Ñâÿçü ñ ñåðâåðîì óñòàíîâëåíà!" << endl;
+    cout << "Ð¡Ð²ÑÐ·ÑŒ Ñ ÑÐµÑ€Ð²ÐµÑ€Ð¾Ð¼ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½Ð°!" << endl;
 	for (;;) {
 	  cout << "> ";
 	  cin.getline(buffer, 255);
@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
 	}
   }
   else {
-	cout << "Ñâÿçü ñ ñåðâåðîì óñòàíîâèòü íå óäàëîñü..." << endl;
+	cout << "Ð¡Ð²ÑÐ·ÑŒ Ñ ÑÐµÑ€Ð²ÐµÑ€Ð¾Ð¼ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð½Ðµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ..." << endl;
 	closesocket(server);
 	WSACleanup();
 	return EXIT_FAILURE;
